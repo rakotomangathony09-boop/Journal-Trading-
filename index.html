@@ -7,123 +7,179 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        input, select, textarea { background-color: #1e293b !important; border: 1px solid #334155 !important; color: white !important; }
+        body { background-color: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+        input, select, textarea { background-color: #1e293b !important; border: 1px solid #334155 !important; color: white !important; font-size: 0.8rem !important; padding: 10px !important; border-radius: 8px !important; }
+        .win { color: #10b981; font-weight: bold; } .loss { color: #ef4444; font-weight: bold; }
+        th { text-transform: uppercase; font-size: 10px; letter-spacing: 1px; color: #94a3b8; padding: 12px; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="p-2 md:p-6">
 
-    <header class="flex justify-between items-center mb-8 glass p-6 rounded-2xl border-l-4 border-blue-500">
-        <div>
-            <h1 class="text-2xl font-bold tracking-tight uppercase text-white">MC ANTHONIO <span class="text-blue-500">JOURNAL 2026</span></h1>
-            <p class="text-gray-400 text-sm">Gestion de Risque Strict RR 1:3</p>
+    <header class="flex flex-col md:flex-row justify-between items-center mb-6 glass p-6 rounded-3xl border-b-2 border-blue-600 shadow-2xl">
+        <div class="text-center md:text-left">
+            <h1 class="text-xl font-black uppercase tracking-widest text-white">MC ANTHONIO <span class="text-blue-500">PRO JOURNAL 2026</span></h1>
+            <p class="text-[10px] text-gray-500 font-bold">ANALYTICS & PERFORMANCE TRACKER</p>
         </div>
-        <div class="text-right">
-            <div id="clock" class="text-xl font-mono text-blue-400 font-bold">00:00:00</div>
-            <span class="text-xs text-green-500 font-bold">ANALYSE LIVE</span>
-        </div>
+        <div id="clock" class="text-lg font-mono font-bold text-blue-400">00:00:00</div>
     </header>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
         <section class="lg:col-span-1 space-y-4">
-            <div class="glass p-6 rounded-2xl">
-                <h2 class="text-lg font-bold mb-4 flex items-center"><span class="mr-2">📝</span> Nouvelle Saisie</h2>
-                <form id="tradeForm" class="space-y-4">
-                    <input type="text" id="pair" placeholder="Paire (ex: EURUSD)" class="w-full rounded p-3 outline-none" required>
+            <div class="glass p-5 rounded-2xl shadow-xl">
+                <h2 class="text-sm font-bold mb-4 border-b border-gray-700 pb-2 uppercase text-blue-400">Saisie Manuelle</h2>
+                <form id="fullTradeForm" class="space-y-3 text-xs">
                     <div class="grid grid-cols-2 gap-2">
-                        <select id="cot" class="rounded p-3 text-sm">
-                            <option value="Bullish">COT: ACHAT</option>
-                            <option value="Bearish">COT: VENTE</option>
-                        </select>
-                        <input type="number" id="sentiment" placeholder="Sentiment %" class="rounded p-3 text-sm" required>
+                        <input type="text" id="asset" placeholder="Actif (ex: XAUUSD)" class="w-full" required>
+                        <input type="number" step="0.01" id="lot" placeholder="Lots" class="w-full" required>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <input type="number" step="0.00001" id="entry" placeholder="Entrée" class="rounded p-3 text-sm" required>
-                        <input type="number" step="0.00001" id="sl" placeholder="Stop Loss" class="rounded p-3 text-sm" required>
+                        <input type="datetime-local" id="tradeTime" class="w-full" required>
+                        <input type="number" id="positions" placeholder="Nb Pos." class="w-full" required>
                     </div>
-                    <textarea id="notes" placeholder="Psychologie / Notes sur la liquidité..." class="w-full rounded p-3 text-sm h-20 outline-none"></textarea>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" step="0.00001" id="entry" placeholder="Prix Entrée" class="w-full" required>
+                        <input type="number" step="0.00001" id="exit" placeholder="Prix Sortie" class="w-full" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" step="0.00001" id="sl" placeholder="Niveau SL" class="w-full" required>
+                        <input type="number" step="0.00001" id="tp" placeholder="Niveau TP" class="w-full" required>
+                    </div>
+                    <textarea id="reason" placeholder="Raison d'entrée (ex: FVG + COT Bullish)" class="w-full h-14 outline-none"></textarea>
+                    <textarea id="interpretation" placeholder="Interprétation / Psychologie" class="w-full h-14 outline-none"></textarea>
                     
-                    <div class="p-3 bg-blue-900/30 border border-blue-500/50 rounded-lg text-center">
-                        <p class="text-[10px] text-blue-300 uppercase">Objectif TP (RR 1:3)</p>
-                        <p id="tpDisplay" class="text-xl font-bold text-white">---</p>
-                    </div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-bold transition-all">ENREGISTRER LE TRADE</button>
+                    <select id="outcome" class="w-full font-bold uppercase cursor-pointer">
+                        <option value="WIN">Gagnant (PROFIT)</option>
+                        <option value="LOSS">Perdant (LOSS)</option>
+                    </select>
+                    
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-black uppercase transition-all shadow-lg shadow-blue-900/40">Valider le Trade</button>
                 </form>
             </div>
         </section>
 
-        <section class="lg:col-span-2 space-y-6">
+        <section class="lg:col-span-3 space-y-6">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="glass p-4 rounded-xl text-center"><p class="text-gray-400 text-xs">Win Rate</p><p id="winRate" class="text-xl font-bold text-blue-400">0%</p></div>
-                <div class="glass p-4 rounded-xl text-center"><p class="text-gray-400 text-xs">Trades</p><p id="totalTrades" class="text-xl font-bold">0</p></div>
-                <div class="glass p-4 rounded-xl text-center"><p class="text-gray-400 text-xs">Profit</p><p id="profit" class="text-xl font-bold text-green-500">0 R</p></div>
-                <div class="glass p-4 rounded-xl text-center"><p class="text-gray-400 text-xs">Statut</p><p class="text-xs font-bold text-green-400 uppercase">Actif</p></div>
+                <div class="glass p-4 rounded-xl border-t-2 border-blue-500 shadow-lg">
+                    <p class="text-[10px] text-gray-400 uppercase font-bold">Win Rate</p>
+                    <p id="winRate" class="text-2xl font-black text-blue-400">0%</p>
+                </div>
+                <div class="glass p-4 rounded-xl border-t-2 border-green-500 shadow-lg">
+                    <p class="text-[10px] text-gray-400 uppercase font-bold">Bilan Hebdo</p>
+                    <p id="weeklyBilan" class="text-2xl font-black text-green-500">0 R</p>
+                </div>
+                <div class="glass p-4 rounded-xl border-t-2 border-purple-500 shadow-lg">
+                    <p class="text-[10px] text-gray-400 uppercase font-bold">Bilan Mensuel</p>
+                    <p id="monthlyBilan" class="text-2xl font-black text-purple-500">0 R</p>
+                </div>
+                <div class="glass p-4 rounded-xl border-t-2 border-white shadow-lg">
+                    <p class="text-[10px] text-gray-400 uppercase font-bold">Profit Total</p>
+                    <p id="netProfit" class="text-2xl font-black text-white">0 R</p>
+                </div>
             </div>
 
-            <div class="glass p-6 rounded-2xl"><canvas id="equityChart" height="120"></canvas></div>
+            <div class="glass p-4 rounded-2xl shadow-2xl"><canvas id="mainChart" height="110"></canvas></div>
 
-            <div class="glass p-6 rounded-2xl overflow-hidden">
-                <h3 class="text-sm font-bold text-gray-400 mb-4 uppercase">Historique & Psychologie</h3>
-                <div id="tradeList" class="space-y-3 max-h-60 overflow-y-auto pr-2"></div>
+            <div class="glass rounded-2xl overflow-x-auto shadow-2xl">
+                <table class="w-full text-[11px] text-left">
+                    <thead class="bg-slate-900/50">
+                        <tr>
+                            <th class="p-4">Date & Heure</th>
+                            <th class="p-4">Actif</th>
+                            <th class="p-4">Lots / Pos</th>
+                            <th class="p-4">Entrée / Sortie</th>
+                            <th class="p-4">RR Réel</th>
+                            <th class="p-4">Résultat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody" class="divide-y divide-gray-800"></tbody>
+                </table>
             </div>
+            <button onclick="if(confirm('Tout effacer ?')){localStorage.clear(); location.reload();}" class="text-[10px] text-red-500 font-bold opacity-30 hover:opacity-100 transition">Réinitialiser la base de données</button>
         </section>
     </div>
 
     <script>
         setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
-        let trades = JSON.parse(localStorage.getItem('mc_trades_2026')) || [];
+        let database = JSON.parse(localStorage.getItem('mcanthonio_final_db')) || [];
 
-        const entryI = document.getElementById('entry');
-        const slI = document.getElementById('sl');
-        const tpD = document.getElementById('tpDisplay');
-
-        function calcTP() {
-            const e = parseFloat(entryI.value), s = parseFloat(slI.value);
-            if(e && s) {
-                const diff = Math.abs(e - s);
-                tpD.innerText = (e > s ? e + (diff * 3) : e - (diff * 3)).toFixed(5);
-            }
-        }
-        entryI.addEventListener('input', calcTP); slI.addEventListener('input', calcTP);
-
-        document.getElementById('tradeForm').addEventListener('submit', (e) => {
+        document.getElementById('fullTradeForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const res = confirm("Trade Gagné (OK) ou Perdu (Annuler) ?");
-            trades.push({
-                pair: document.getElementById('pair').value,
-                result: res ? 'WIN' : 'LOSS',
-                notes: document.getElementById('notes').value,
-                date: new Date().toLocaleDateString()
-            });
-            localStorage.setItem('mc_trades_2026', JSON.stringify(trades));
+            const entry = parseFloat(document.getElementById('entry').value);
+            const exit = parseFloat(document.getElementById('exit').value);
+            const sl = parseFloat(document.getElementById('sl').value);
+            
+            const risk = Math.abs(entry - sl);
+            const reward = Math.abs(entry - exit);
+            const rrReal = risk !== 0 ? (reward / risk).toFixed(2) : 0;
+
+            const newTrade = {
+                time: document.getElementById('tradeTime').value,
+                asset: document.getElementById('asset').value,
+                lot: document.getElementById('lot').value,
+                pos: document.getElementById('positions').value,
+                entry, exit, sl, 
+                tp: document.getElementById('tp').value,
+                reason: document.getElementById('reason').value,
+                interp: document.getElementById('interpretation').value,
+                rr: rrReal,
+                outcome: document.getElementById('outcome').value,
+                timestamp: new Date(document.getElementById('tradeTime').value).getTime()
+            };
+
+            database.push(newTrade);
+            localStorage.setItem('mcanthonio_final_db', JSON.stringify(database));
             location.reload();
         });
 
-        function init() {
-            const list = document.getElementById('tradeList');
-            let eq = 0, pts = [0], labels = ["0"];
-            trades.reverse().forEach((t, i) => {
-                const card = document.createElement('div');
-                card.className = `p-3 rounded-lg border-l-4 ${t.result==='WIN'?'border-green-500 bg-green-500/10':'border-red-500 bg-red-500/10'}`;
-                card.innerHTML = `<div class="flex justify-between font-bold text-sm"><span>${t.pair}</span><span>${t.result}</span></div><p class="text-[11px] text-gray-400 italic mt-1">${t.notes || 'Pas de notes'}</p>`;
-                list.appendChild(card);
-            });
-            
-            const totalWins = trades.filter(t => t.result === 'WIN').length;
-            document.getElementById('totalTrades').innerText = trades.length;
-            document.getElementById('winRate').innerText = trades.length > 0 ? ((totalWins/trades.length)*100).toFixed(0)+"%" : "0%";
-            
-            trades.reverse().forEach((t, i) => { eq += (t.result === 'WIN' ? 3 : -1); pts.push(eq); labels.push(i+1); });
-            document.getElementById('profit').innerText = eq + " R";
+        function updateUI() {
+            const body = document.getElementById('historyBody');
+            let totalR = 0, weeklyR = 0, monthlyR = 0;
+            const now = new Date().getTime();
+            const weekAgo = now - (7 * 24 * 60 * 60 * 1000);
+            const monthAgo = now - (30 * 24 * 60 * 60 * 1000);
 
-            new Chart(document.getElementById('equityChart'), {
+            database.sort((a,b) => b.timestamp - a.timestamp).forEach(t => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-blue-500/5 transition";
+                const profitUnits = t.outcome === 'WIN' ? parseFloat(t.rr) : -1;
+                
+                totalR += profitUnits;
+                if(t.timestamp > weekAgo) weeklyR += profitUnits;
+                if(t.timestamp > monthAgo) monthlyR += profitUnits;
+
+                tr.innerHTML = `
+                    <td class="p-4 text-gray-500">${t.time.replace('T', ' ')}</td>
+                    <td class="p-4 font-bold text-white">${t.asset}</td>
+                    <td class="p-4 text-gray-400">${t.lot} Lot / ${t.pos} Pos</td>
+                    <td class="p-4 font-mono text-blue-400">${t.entry} → ${t.exit}</td>
+                    <td class="p-4 font-bold">${t.rr}:1</td>
+                    <td class="p-4 ${t.outcome === 'WIN' ? 'win' : 'loss'}">${t.outcome}</td>
+                `;
+                body.appendChild(tr);
+            });
+
+            document.getElementById('netProfit').innerText = totalR.toFixed(1) + " R";
+            document.getElementById('weeklyBilan').innerText = weeklyR.toFixed(1) + " R";
+            document.getElementById('monthlyBilan').innerText = monthlyR.toFixed(1) + " R";
+            const wins = database.filter(t => t.outcome === 'WIN').length;
+            document.getElementById('winRate').innerText = database.length > 0 ? ((wins/database.length)*100).toFixed(0) + "%" : "0%";
+
+            let chartPoints = [0], labels = ["START"], running = 0;
+            database.reverse().forEach((t, i) => {
+                running += (t.outcome === 'WIN' ? parseFloat(t.rr) : -1);
+                chartPoints.push(running);
+                labels.push(i+1);
+            });
+
+            new Chart(document.getElementById('mainChart'), {
                 type: 'line',
-                data: { labels: labels, datasets: [{ label: 'Performance', data: pts, borderColor: '#3b82f6', tension: 0.3, fill: true, backgroundColor: 'rgba(59,130,246,0.1)' }] },
-                options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#334155' } }, x: { display: false } } }
+                data: { labels, datasets: [{ label: 'Performance (R)', data: chartPoints, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.3, borderWidth: 3, pointRadius: 0 }] },
+                options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b' } } } }
             });
         }
-        init();
+        updateUI();
     </script>
 </body>
-    </html>
+        </html>
