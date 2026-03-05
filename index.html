@@ -9,185 +9,121 @@
     <style>
         body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
         .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        input, select { background-color: #0f172a !important; border: 1px solid #334155 !important; color: white !important; }
+        input, select, textarea { background-color: #1e293b !important; border: 1px solid #334155 !important; color: white !important; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
     <header class="flex justify-between items-center mb-8 glass p-6 rounded-2xl border-l-4 border-blue-500">
         <div>
-            <h1 class="text-2xl font-bold tracking-tight uppercase">MC ANTHONIO <span class="text-blue-500">JOURNAL 2026</span></h1>
-            <p class="text-gray-400 text-sm">Analyse Assistant | Stratégie Institutionnelle</p>
+            <h1 class="text-2xl font-bold tracking-tight uppercase text-white">MC ANTHONIO <span class="text-blue-500">JOURNAL 2026</span></h1>
+            <p class="text-gray-400 text-sm">Gestion de Risque Strict RR 1:3</p>
         </div>
-        <div class="text-right hidden md:block">
-            <div id="clock" class="text-xl font-mono">00:00:00</div>
-            <span class="text-xs text-green-500 font-bold underline">SYSTÈME LIVE</span>
+        <div class="text-right">
+            <div id="clock" class="text-xl font-mono text-blue-400 font-bold">00:00:00</div>
+            <span class="text-xs text-green-500 font-bold">ANALYSE LIVE</span>
         </div>
     </header>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        <section class="lg:col-span-1 glass p-6 rounded-2xl">
-            <h2 class="text-xl font-semibold mb-6 border-b border-gray-700 pb-2 flex items-center">
-                <span class="mr-2">📊</span> Nouvelle Analyse
-            </h2>
-            <form id="tradeForm" class="space-y-4">
-                <div>
-                    <label class="block text-xs uppercase text-gray-400 mb-1 font-bold">Paire de devises</label>
-                    <input type="text" id="pair" placeholder="ex: EURUSD" class="w-full rounded p-3 outline-none focus:ring-2 focus:ring-blue-500" required>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs uppercase text-gray-400 mb-1 font-bold">Flux COT</label>
-                        <select id="cot" class="w-full rounded p-3">
-                            <option value="Bullish">Institutionnel ACHAT</option>
-                            <option value="Bearish">Institutionnel VENTE</option>
-                            <option value="Neutral">Neutre / Range</option>
+        <section class="lg:col-span-1 space-y-4">
+            <div class="glass p-6 rounded-2xl">
+                <h2 class="text-lg font-bold mb-4 flex items-center"><span class="mr-2">📝</span> Nouvelle Saisie</h2>
+                <form id="tradeForm" class="space-y-4">
+                    <input type="text" id="pair" placeholder="Paire (ex: EURUSD)" class="w-full rounded p-3 outline-none" required>
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="cot" class="rounded p-3 text-sm">
+                            <option value="Bullish">COT: ACHAT</option>
+                            <option value="Bearish">COT: VENTE</option>
                         </select>
+                        <input type="number" id="sentiment" placeholder="Sentiment %" class="rounded p-3 text-sm" required>
                     </div>
-                    <div>
-                        <label class="block text-xs uppercase text-gray-400 mb-1 font-bold">Sentiment (%)</label>
-                        <input type="number" id="sentiment" placeholder="Crowd %" class="w-full rounded p-3" required>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="number" step="0.00001" id="entry" placeholder="Entrée" class="rounded p-3 text-sm" required>
+                        <input type="number" step="0.00001" id="sl" placeholder="Stop Loss" class="rounded p-3 text-sm" required>
                     </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs uppercase text-gray-400 mb-1 font-bold">Prix d'Entrée</label>
-                        <input type="number" step="0.00001" id="entry" class="w-full rounded p-3" required>
+                    <textarea id="notes" placeholder="Psychologie / Notes sur la liquidité..." class="w-full rounded p-3 text-sm h-20 outline-none"></textarea>
+                    
+                    <div class="p-3 bg-blue-900/30 border border-blue-500/50 rounded-lg text-center">
+                        <p class="text-[10px] text-blue-300 uppercase">Objectif TP (RR 1:3)</p>
+                        <p id="tpDisplay" class="text-xl font-bold text-white">---</p>
                     </div>
-                    <div>
-                        <label class="block text-xs uppercase text-gray-400 mb-1 font-bold">Stop Loss (SL)</label>
-                        <input type="number" step="0.00001" id="sl" class="w-full rounded p-3" required>
-                    </div>
-                </div>
-
-                <div class="p-4 bg-blue-900/20 border border-blue-500/30 rounded-xl">
-                    <p class="text-xs text-blue-400 font-bold uppercase mb-1">Cible Take Profit (RR 1:3)</p>
-                    <p id="tpDisplay" class="text-2xl font-mono font-bold text-white">---</p>
-                </div>
-
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-900/20 transition-all active:scale-95">
-                    ENREGISTRER LE TRADE
-                </button>
-            </form>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-xl font-bold transition-all">ENREGISTRER LE TRADE</button>
+                </form>
+            </div>
         </section>
 
         <section class="lg:col-span-2 space-y-6">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="glass p-5 rounded-2xl text-center">
-                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Win Rate</p>
-                    <p id="winRate" class="text-3xl font-black text-blue-400">0%</p>
-                </div>
-                <div class="glass p-5 rounded-2xl text-center">
-                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Total Trades</p>
-                    <p id="totalTrades" class="text-3xl font-black">0</p>
-                </div>
-                <div class="glass p-5 rounded-2xl text-center border-b-4 border-green-500">
-                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Profit Facteur</p>
-                    <p id="profitFactor" class="text-3xl font-black text-green-500">0.0</p>
-                </div>
-                <div class="glass p-5 rounded-2xl text-center border-b-4 border-purple-500">
-                    <p class="text-gray-400 text-xs font-bold uppercase mb-1">Espérance</p>
-                    <p id="expectancy" class="text-3xl font-black text-purple-500">0.0</p>
-                </div>
+                <div class="glass p-4 rounded-xl text-center"><p class="text-gray-400 text-xs">Win Rate</p><p id="winRate" class="text-xl font-bold text-blue-400">0%</p></div>
+                <div class="glass p-4 rounded-xl text-center"><p class="text-gray-400 text-xs">Trades</p><p id="totalTrades" class="text-xl font-bold">0</p></div>
+                <div class="glass p-4 rounded-xl text-center"><p class="text-gray-400 text-xs">Profit</p><p id="profit" class="text-xl font-bold text-green-500">0 R</p></div>
+                <div class="glass p-4 rounded-xl text-center"><p class="text-gray-400 text-xs">Statut</p><p class="text-xs font-bold text-green-400 uppercase">Actif</p></div>
             </div>
 
-            <div class="glass p-6 rounded-2xl shadow-2xl">
-                <h3 class="text-sm font-bold text-gray-400 uppercase mb-4">Courbe d'Équité (Track Record)</h3>
-                <canvas id="equityChart" height="140"></canvas>
+            <div class="glass p-6 rounded-2xl"><canvas id="equityChart" height="120"></canvas></div>
+
+            <div class="glass p-6 rounded-2xl overflow-hidden">
+                <h3 class="text-sm font-bold text-gray-400 mb-4 uppercase">Historique & Psychologie</h3>
+                <div id="tradeList" class="space-y-3 max-h-60 overflow-y-auto pr-2"></div>
             </div>
-            
-            <button onclick="localStorage.clear(); location.reload();" class="text-xs text-red-500 hover:underline opacity-50">Réinitialiser le journal</button>
         </section>
     </div>
 
     <script>
-        // Horloge temps réel
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-        }, 1000);
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+        let trades = JSON.parse(localStorage.getItem('mc_trades_2026')) || [];
 
-        // Données persistantes
-        let trades = JSON.parse(localStorage.getItem('mcanthonio_trades')) || [];
+        const entryI = document.getElementById('entry');
+        const slI = document.getElementById('sl');
+        const tpD = document.getElementById('tpDisplay');
 
-        // Calcul dynamique du TP (Strict RR 1:3)
-        const entryInput = document.getElementById('entry');
-        const slInput = document.getElementById('sl');
-        const tpDisplay = document.getElementById('tpDisplay');
-
-        function updateTP() {
-            const entry = parseFloat(entryInput.value);
-            const sl = parseFloat(slInput.value);
-            if(entry && sl) {
-                const risk = Math.abs(entry - sl);
-                const tp = entry > sl ? entry + (risk * 3) : entry - (risk * 3);
-                tpDisplay.innerText = tp.toFixed(5);
+        function calcTP() {
+            const e = parseFloat(entryI.value), s = parseFloat(slI.value);
+            if(e && s) {
+                const diff = Math.abs(e - s);
+                tpD.innerText = (e > s ? e + (diff * 3) : e - (diff * 3)).toFixed(5);
             }
         }
+        entryI.addEventListener('input', calcTP); slI.addEventListener('input', calcTP);
 
-        entryInput.addEventListener('input', updateTP);
-        slInput.addEventListener('input', updateTP);
-
-        // Sauvegarde d'un trade
         document.getElementById('tradeForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const res = confirm("Le trade a-t-il touché le TP (OK) ou le SL (Annuler) ?");
-            const newTrade = {
+            const res = confirm("Trade Gagné (OK) ou Perdu (Annuler) ?");
+            trades.push({
                 pair: document.getElementById('pair').value,
                 result: res ? 'WIN' : 'LOSS',
+                notes: document.getElementById('notes').value,
                 date: new Date().toLocaleDateString()
-            };
-            trades.push(newTrade);
-            localStorage.setItem('mcanthonio_trades', JSON.stringify(trades));
+            });
+            localStorage.setItem('mc_trades_2026', JSON.stringify(trades));
             location.reload();
         });
 
-        // Graphique et Statistiques
-        function initDashboard() {
-            const total = trades.length;
-            const wins = trades.filter(t => t.result === 'WIN').length;
-            document.getElementById('totalTrades').innerText = total;
-            document.getElementById('winRate').innerText = total > 0 ? ((wins/total)*100).toFixed(0) + "%" : "0%";
-            
-            let currentEq = 0;
-            let dataPoints = [0];
-            let labels = ["Départ"];
-            
-            trades.forEach((t, i) => {
-                currentEq += (t.result === 'WIN' ? 3 : -1);
-                dataPoints.push(currentEq);
-                labels.push("T" + (i+1));
+        function init() {
+            const list = document.getElementById('tradeList');
+            let eq = 0, pts = [0], labels = ["0"];
+            trades.reverse().forEach((t, i) => {
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-lg border-l-4 ${t.result==='WIN'?'border-green-500 bg-green-500/10':'border-red-500 bg-red-500/10'}`;
+                card.innerHTML = `<div class="flex justify-between font-bold text-sm"><span>${t.pair}</span><span>${t.result}</span></div><p class="text-[11px] text-gray-400 italic mt-1">${t.notes || 'Pas de notes'}</p>`;
+                list.appendChild(card);
             });
+            
+            const totalWins = trades.filter(t => t.result === 'WIN').length;
+            document.getElementById('totalTrades').innerText = trades.length;
+            document.getElementById('winRate').innerText = trades.length > 0 ? ((totalWins/trades.length)*100).toFixed(0)+"%" : "0%";
+            
+            trades.reverse().forEach((t, i) => { eq += (t.result === 'WIN' ? 3 : -1); pts.push(eq); labels.push(i+1); });
+            document.getElementById('profit').innerText = eq + " R";
 
             new Chart(document.getElementById('equityChart'), {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Performance (Unités de Risque)',
-                        data: dataPoints,
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#3b82f6'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-                    }
-                }
+                data: { labels: labels, datasets: [{ label: 'Performance', data: pts, borderColor: '#3b82f6', tension: 0.3, fill: true, backgroundColor: 'rgba(59,130,246,0.1)' }] },
+                options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#334155' } }, x: { display: false } } }
             });
         }
-        initDashboard();
+        init();
     </script>
 </body>
-                            </html>
+    </html>
